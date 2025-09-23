@@ -1,15 +1,13 @@
-
+#!/usr/bin/env python3
 import socket 
 import requests
 import sys
-#decoracao
 from rich.panel import Panel
 from rich.console import Console
 from rich.align import Align
 from rich.style import Style
 from rich import print
 from colorama import init, Fore
-#aceleracao
 
 init(autoreset=False)
 
@@ -46,19 +44,24 @@ def dns_recon():
           console.print("Escaneando porta. Apos terminar o scanner aperte 'CRTL C' para ir para a proxima etapa",style=estilo_scan)
           for port in ports:
                 cliente = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-
                 cliente.settimeout(0.5)
                 resu = cliente.connect_ex((dominio,port))
                 if resu == 0:
                         console.print("[underline gold3][☺ + ☺][/underline gold3][underline gray100] Portas Abertas → {}::({})".format(port,socket.getservbyport(port)))
         except:
                pass                         
+          #---------------------- dnsRecon
         with open('dns.txt',"r")as dnsFile:
                 subdomains = dnsFile.read().splitlines()
+                contador = dnsFile.readlines()
+                contador = 0
         for subs in subdomains:
                 subdominios = ""+subs+"."+dominio+"" 
                 try:
+                        contador += 1 #nao modifique o contador sempre deixe nessa posicao pois nao pode detectar o admin
                         ip = socket.gethostbyname(subdominios)
+                        if contador == 23:
+                              console.print("[reverse green]INFO: ADMIN ENCONTRADO {}".format(subdominios))
                         console.print("[underline gold3][☺ + ☺][/underline gold3][underline blue_violet]Novo subdominio encontrado│→  {} ({})".format(subdominios,ip,port))
                         with open('dadosDn.txt','a')as dadosDn:
                                dadosDn.write(subdominios,ip)
